@@ -15,73 +15,279 @@ class LinkedList {
   }
 
   insertLast(item) {
-    // checking to see if the list is empty. Is the head's value === to null
     if (this.head === null) {
-      // if the list is empty, we are inserting an item as if it's at the beginning of the list.
       this.insertFirst(item);
     }
-    else {
-      // otherwise, we are creating a tempNode that is equal to the head.
-      let tempNode = this.head;
-      // as long as the tempNode is not the last item in the list, meaning its next isn't pointing at null, execute this loop.
-      while (tempNode.next !== null) {
-        // each time it loops through it's going to move the tempNode one place further through the list by reassigning it's value to the value of it's next node.
-        tempNode = tempNode.next;
-      }
-      // when the tempNode's next pointer is at null, then we reassign that value to be a new node that has the value of item and is pointing at null.
-      tempNode.next = new _Node(item, null);
+
+    let currNode = this.head;
+
+    while (currNode.next !== null) {
+      currNode = currNode.next;
     }
+
+    currNode.next = new _Node(item, null);
   }
 
   find(item) {
-    // start at the head of the list
     let currNode = this.head;
-    // check whether the list is empty, if so return null
-    if (!this.head === null) {
+    
+    if (this.head === null) {
+      console.log('List is empty. Could not find item.');
       return null;
     }
-    // loop through the linked list items until the currNode === the item that we are looking for.
+
     while (currNode.value !== item) {
-      // if the current node's next value is null or the end of the list, then return null
       if (currNode.next === null) {
         return null;
-      }
-      // else, increment the currNode value to the next node and re-evaluate the loop conditions.
-      else {
+      } else {
         currNode = currNode.next;
       }
     }
-    // if the loop ends without returning something, that will mean we have found the node that we are looking for. Return that node.
+
     return currNode;
   }
 
   remove(item) {
-    // If the list is empty, return null.
-    if (!this.head) {
+    let currNode = this.head;
+    let prevNode = this.head;
+
+    if (this.head === null) {
+      console.log('List empty, could not find item to remove');
       return null;
     }
-    // If the item to be removed is the first item in the list, set head to equal the next node from HEAD. Return nothing.
+
     if (this.head.value === item) {
       this.head = this.head.next;
       return;
     }
-    // Start the current node off at head.
-    let currNode = this.head;
-    // Keep track of the previous node as well and start it off at head.
-    let previousNode = this.head;
-    // Start a loop. As long as the currNode is not at the end of the list or hasn't found the item to delete, run the loop.
+
     while ((currNode !== null) && (currNode.value !== item)) {
-      // Set the previous node to the currNode.
-      previousNode = currNode;
-      // Set the currNode to the currNode.next value
+      prevNode = currNode;
       currNode = currNode.next;
     }
-    // if the currNode is null than the item wasn't found. Console log item not found and return nothing.
+
     if (currNode === null) {
-      console.log('Item not found');
+      console.log('Could not find item to remove');
+      return null;
+    }
+
+    prevNode.next = currNode.next;
+  }
+
+  insertBefore(item, key) {
+    let currNode = this.head;
+    let prevNode = this.head;
+
+    if (this.head === null) {
+      console.log(`List is empty. Could not insert before '${key}'`);
       return;
     }
-    // Otherwise, if the correct node was found set the previousNode next pointer to the currNode's next point, thus skipping over the node that is to be deleted.
-    previousNode.next = currNode.next;
+
+    while (currNode.value !== key && currNode !== null) {
+      prevNode = currNode;
+      currNode = currNode.next;
+    }
+
+    if (currNode === null) {
+      console.log(`Could not find '${key}' to insert before`);
+      return;
+    }
+
+    prevNode.next = new _Node(item, currNode);
+  }
+
+  insertAfter(item, key) {
+    let currNode = this.head;
+    let nextNode = this.head;
+
+    if (this.head === null) {
+      console.log(`List is empty. Could not insert after '${key}'`);
+      return;
+    }
+
+    while (currNode.value !== key && currNode !== null) {
+      currNode = currNode.next;
+      nextNode = currNode.next;
+    }
+
+    if (currNode === null) {
+      console.log(`Could not find '${key}' to insert after`);
+      return;
+    }
+
+    if (nextNode === null) {
+      this.insertLast(item);
+      return;
+    }
+
+    currNode.next = new _Node(item, nextNode);
+  }
+
+  insertAt(item, index) {
+    let counter = 1;
+    let currNode = this.head;
+    let prevNode = this.head;
+
+    if (index === 0) {
+      this.insertFirst(item);
+      return;
+    }
+
+    if (this.head === null) {
+      console.log(`List is empty. Could not insert at ${index} index`);
+      return;
+    }
+
+    while (counter < index) {
+      if (currNode === null) {
+        console.log(`No item at index ${index}`);
+        return;
+      }
+      
+      counter += 1;
+      prevNode = currNode;
+      currNode = currNode.next;
+    }
+
+    prevNode.next = new _Node(item, currNode);
   }
 }
+
+function display(list) {
+  let currNode = list.head;
+  let listDisplayed = 'Head:';
+
+  while (currNode !== null) {
+    listDisplayed += ` ${currNode.value},`;
+    currNode = currNode.next;
+  }
+
+  listDisplayed += ' null';
+  console.log(listDisplayed);
+  return listDisplayed;
+}
+
+function size(list) {
+  let sizeOfList = 0;
+
+  if (list.head === null) {
+    return sizeOfList;
+  }
+
+  let currNode = list.head;
+
+  while (currNode !== null) {
+    sizeOfList += 1;
+    currNode = currNode.next;
+  }
+
+  return sizeOfList;
+}
+
+function isEmpty(list) {
+  if (list.head === null) {
+    return true;
+  } else {
+    return false;
+  }
+}
+
+function findPrevious(list, item) {
+  if (list.head === null) {
+    console.log(`List is empty. Could not find node before ${item}`);
+    return `List: ${list.head}`;
+  }
+
+  let currNode = list.head;
+  let prevNode = list.head;
+
+  while (currNode.value !== item && currNode !== null) {
+    prevNode = currNode;
+    currNode = currNode.next;
+  }
+
+  if (currNode === null) {
+    console.log(`Could not find item: ${item}`);
+    return;
+  }
+
+  return prevNode;
+}
+
+function findLast(list) {
+  if (list.head === null) {
+    console.log('List is empty');
+    return `List: ${list.head}`;
+  }
+
+  let currNode = list.head;
+
+  while (currNode.next !== null) {
+    currNode = currNode.next;
+  }
+
+  return currNode;
+}
+
+// This function takes a list as an argument.
+function removeDuplicates(lst) {
+  // Sets the 'current' variable to the head of the list.
+  let current = lst.head;
+  // As long as the current node does not equal null, the loop will run. 
+  while (current !== null) {
+    // We are setting a new node to the current node.
+    let newNode = current;
+    // Starting another loop inside of the first loop. As long as the newNode isn't null run the loop.
+    while (newNode.next !== null) {
+      // if the newNode's next value === the current Node's value run the block of code.
+      if (newNode.next.value === current.value) {
+        // set the newNode's next pointer to equal the node to places ahead of newNode
+        newNode.next = newNode.next.next;
+      }
+      // otherwise, if newNode.next.value is not equal to the current.value then just increment newNode to the next Node.
+      else {
+        newNode = newNode.next;
+      }
+    }
+    // Then we are going to increment next again and run through the loop again for that node and it's value.
+    current = current.next;
+  }
+
+  // SUMMARY: This function removes duplicates from a Linked List. Starting at the head of a linked list it searches through a list to see if any of the other nodes matches that value. If there is a match then they cut that node out. They do that for all matching nodes. Then move onto the next item in the list, check to make sure there are no matches and on and on.
+
+  // The time complexity for this function is O(n^2) since you are doing a loop through the list for every item of the list.
+}
+
+function main() {
+  let SLL = new LinkedList;
+  let emptySLL = new LinkedList;
+
+  SLL.insertFirst('Apollo');
+  SLL.insertFirst('Boomer');
+  SLL.insertFirst('Apollo');
+  SLL.insertFirst('Helo');
+  SLL.insertFirst('Husker');
+  SLL.insertFirst('Apollo');
+  SLL.insertFirst('Boomer');
+  SLL.insertFirst('Starbuck');
+  SLL.insertFirst('Boomer');
+  SLL.insertFirst('Tauhida');
+  SLL.remove('squirrel');
+  SLL.insertBefore('Athena', 'Boomer');
+  SLL.insertAfter('Hotdog', 'Helo');
+  SLL.insertAt('Kat', 3);
+
+  removeDuplicates(SLL);
+  display(emptySLL);
+  display(SLL);
+  console.log(size(SLL));
+  console.log(size(emptySLL));
+  console.log(isEmpty(SLL));
+  console.log(isEmpty(emptySLL));
+  console.log(findPrevious(SLL, 'Starbuck'));
+  console.log(findPrevious(emptySLL, 'Starbuck'));
+  console.log(findLast(SLL));
+  console.log(findLast(emptySLL));
+}
+
+main();
